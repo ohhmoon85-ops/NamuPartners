@@ -683,29 +683,32 @@ footer { background: #0D1F08; padding: 52px 28px 90px; }
       <!-- Right — form -->
       <div class="recruit-card">
         <div class="recruit-card-title">📝 파트너 신청하기</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">이름</label>
-            <input class="form-input" type="text" placeholder="홍길동">
+        <form id="partnerForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">이름</label>
+              <input class="form-input" type="text" name="이름" placeholder="홍길동" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">연락처</label>
+              <input class="form-input" type="tel" name="연락처" placeholder="010-0000-0000" required>
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label">연락처</label>
-            <input class="form-input" type="tel" placeholder="010-0000-0000">
+            <label class="form-label">이메일</label>
+            <input class="form-input" type="email" name="이메일" placeholder="example@email.com" required>
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">이메일</label>
-          <input class="form-input" type="email" placeholder="example@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">경력 사항</label>
-          <input class="form-input" type="text" placeholder="예) 보험업 3년 / 영업직 5년 / 신규">
-        </div>
-        <div class="form-group">
-          <label class="form-label">문의 내용 (선택)</label>
-          <input class="form-input" type="text" placeholder="궁금한 점을 남겨주세요">
-        </div>
-        <button class="btn-form">신청 완료하기 →</button>
+          <div class="form-group">
+            <label class="form-label">경력 사항</label>
+            <input class="form-input" type="text" name="경력사항" placeholder="예) 보험업 3년 / 영업직 5년 / 신규" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">문의 내용 (선택)</label>
+            <input class="form-input" type="text" name="문의내용" placeholder="궁금한 점을 남겨주세요">
+          </div>
+          <div id="formMsg" style="display:none; padding:10px 0; font-size:14px; font-weight:600; text-align:center;"></div>
+          <button class="btn-form" type="submit" id="formSubmitBtn">신청 완료하기 →</button>
+        </form>
       </div>
     </div>
   </div>
@@ -813,6 +816,46 @@ function toggleNav() {
 window.addEventListener('scroll', () => {
   document.getElementById('mobileNav').classList.remove('open');
   document.getElementById('ham').classList.remove('open');
+});
+
+// ── 파트너 신청 폼 ──
+const FORMSPREE_ENDPOINT = 'YOUR_FORMSPREE_ENDPOINT'; // ← Formspree 가입 후 여기 교체
+
+document.getElementById('partnerForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const btn = document.getElementById('formSubmitBtn');
+  const msg = document.getElementById('formMsg');
+
+  btn.disabled = true;
+  btn.textContent = '전송 중...';
+  msg.style.display = 'none';
+
+  const data = new FormData(this);
+
+  try {
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (res.ok) {
+      msg.style.color = '#c8f0a0';
+      msg.textContent = '✅ 신청이 완료되었습니다! 빠른 시일 내에 연락드리겠습니다.';
+      msg.style.display = 'block';
+      this.reset();
+    } else {
+      throw new Error('서버 오류');
+    }
+  } catch (err) {
+    msg.style.color = '#ffb3b3';
+    msg.textContent = '❌ 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+    msg.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '신청 완료하기 →';
+  }
 });
 </script>
 </body>
