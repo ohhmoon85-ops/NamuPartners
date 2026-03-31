@@ -256,6 +256,15 @@ section { padding: 96px 28px; }
 .svc-desc { font-size: 13px; color: var(--gray4); line-height: 1.75; }
 
 /* ══ PLATFORM ══ */
+.btn-platform-enter {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 28px;
+  background: var(--green-mid); color: #fff;
+  font-size: 14px; font-weight: 700;
+  padding: 13px 28px; border-radius: 10px;
+  text-decoration: none; transition: background .2s, transform .15s;
+}
+.btn-platform-enter:hover { background: #78C235; transform: translateY(-2px); }
 .platform { background: var(--gray1); }
 .platform-grid {
   display: grid; grid-template-columns: 1fr 1fr;
@@ -486,7 +495,7 @@ footer { background: #0D1F08; padding: 52px 28px 90px; }
     <ul class="nav-links">
       <li><a href="#about">회사 소개</a></li>
       <li><a href="#services">서비스</a></li>
-      <li><a href="#platform">플랫폼</a></li>
+      <li><a href="insurance-ga-platform-proposal.html" target="_blank">플랫폼</a></li>
       <li><a href="#recruit">파트너 모집</a></li>
       <li><a href="#contact">문의</a></li>
     </ul>
@@ -503,7 +512,7 @@ footer { background: #0D1F08; padding: 52px 28px 90px; }
 <div class="mobile-nav" id="mobileNav">
   <a href="#about"    onclick="toggleNav()">회사 소개</a>
   <a href="#services" onclick="toggleNav()">서비스</a>
-  <a href="#platform" onclick="toggleNav()">플랫폼</a>
+  <a href="insurance-ga-platform-proposal.html" target="_blank" onclick="toggleNav()">플랫폼</a>
   <a href="#recruit"  onclick="toggleNav()">파트너 모집</a>
   <a href="#contact"  onclick="toggleNav()">문의하기</a>
   <a href="#recruit"  class="m-cta" onclick="toggleNav()">파트너 신청 →</a>
@@ -527,7 +536,7 @@ footer { background: #0D1F08; padding: 52px 28px 90px; }
       </p>
       <div class="hero-btns">
         <a href="#recruit" class="btn-main">파트너 신청하기 →</a>
-        <a href="#services" class="btn-ghost">서비스 알아보기</a>
+        <a href="insurance-ga-platform-proposal.html" target="_blank" class="btn-ghost">플랫폼 바로가기 ↗</a>
       </div>
     </div>
     <!-- Right -->
@@ -684,6 +693,9 @@ footer { background: #0D1F08; padding: 52px 28px 90px; }
             <div class="plat-desc">고객 이동·상담 요청을 실시간으로 알림 받고, 대시보드에서 영업 현황을 한눈에 파악합니다.</div>
           </div>
         </div>
+        <a href="insurance-ga-platform-proposal.html" target="_blank" class="btn-platform-enter">
+          플랫폼 상세 소개 보기 →
+        </a>
       </div>
     </div>
   </div>
