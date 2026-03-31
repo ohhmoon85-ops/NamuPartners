@@ -1184,32 +1184,190 @@
   }
 
   /* ─── RESPONSIVE ─── */
+
+  /* 태블릿 가로 (1024px 이하) */
   @media (max-width: 1024px) {
+    .hero { padding: 90px 24px 64px; }
     .hero-inner { grid-template-columns: 1fr; gap: 40px; }
-    .hero-main-img { max-width: 600px; margin: 0 auto; }
-    .hero h1 { font-size: 40px; }
+    .hero-main-img { max-width: 640px; margin: 0 auto; }
+    .hero h1 { font-size: 42px; }
+    .hero-stats { gap: 24px; flex-wrap: wrap; }
+
+    .section { padding: 72px 24px; }
+    .section-title { font-size: 32px; }
+
     .problem-grid { grid-template-columns: 1fr; gap: 40px; }
     .features-grid { grid-template-columns: repeat(2, 1fr); }
-    .feature-card.span-2 { grid-column: span 1; }
+    .feature-card.span-2 { grid-column: span 2; }
     .how-content.active { grid-template-columns: 1fr; }
+    .how-visual { min-height: 240px; }
     .ai-grid { grid-template-columns: 1fr; gap: 40px; }
-    .roles-grid { grid-template-columns: 1fr; }
+    .roles-grid { grid-template-columns: repeat(2, 1fr); }
     .tech-grid { grid-template-columns: repeat(3, 1fr); }
     .phases-grid { grid-template-columns: repeat(2, 1fr); }
-    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
+    .footer-brand { grid-column: span 2; }
+
+    .nav-cta .btn-ghost { display: none; }
   }
-  @media (max-width: 640px) {
-    .nav-links { display: none; }
-    .hero h1 { font-size: 30px; }
-    .hero-stats { gap: 20px; }
+
+  /* 햄버거 메뉴 */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+    background: none;
+    border: none;
+  }
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #94A3B8;
+    border-radius: 2px;
+    transition: all .3s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: white; }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: white; }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    background: rgba(11,31,58,0.98);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 16px 20px 24px;
+    z-index: 99;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    color: #94A3B8;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: color .2s;
+  }
+  .mobile-menu a:hover { color: white; }
+  .mobile-menu .mobile-cta {
+    margin-top: 12px;
+    background: var(--blue);
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    padding: 13px;
+    font-weight: 600;
+    border-bottom: none;
+  }
+
+  @media (max-width: 768px) {
+    .hamburger { display: flex; }
+    .nav-links { display: none !important; }
+  }
+
+  /* 태블릿 세로 (768px 이하) */
+  @media (max-width: 768px) {
+    .hero { padding: 80px 20px 56px; }
+    .hero h1 { font-size: 34px; }
+    .hero-desc { font-size: 15px; }
+    .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .hero-stat-num { font-size: 22px; }
+    .hero-actions { flex-direction: column; gap: 10px; }
+    .btn-hero, .btn-hero-outline { width: 100%; justify-content: center; font-size: 14px; padding: 13px 20px; }
+
+    .section { padding: 60px 20px; }
     .section-title { font-size: 28px; }
+    .section-desc { font-size: 14px; }
+
     .features-grid { grid-template-columns: 1fr; }
-    .tech-grid { grid-template-columns: repeat(2, 1fr); }
+    .feature-card.span-2 { grid-column: span 1; }
+    .feature-card.span-2 > div { grid-template-columns: 1fr !important; }
+
+    .roles-grid { grid-template-columns: 1fr; }
+
+    .how-tabs { gap: 6px; }
+    .how-tab { font-size: 13px; padding: 8px 14px; }
+
+    .ai-section { padding: 60px 20px; }
+    .ai-title { font-size: 30px; }
+
     .phases-grid { grid-template-columns: 1fr; }
-    .compare-header { grid-template-columns: 90px repeat(3, 1fr); }
-    .compare-row { grid-template-columns: 90px repeat(3, 1fr); }
-    .cta-title { font-size: 28px; }
-    .footer-inner { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .cta-section { padding: 64px 20px; }
+    .cta-title { font-size: 30px; }
+    .cta-btns { flex-direction: column; align-items: center; }
+    .btn-cta-main, .btn-cta-sec { width: 100%; max-width: 320px; justify-content: center; font-size: 15px; padding: 14px 24px; }
+
+    .footer-inner { grid-template-columns: 1fr; gap: 24px; }
+    .footer-brand { grid-column: span 1; }
+
+    .compliance-bar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+    .compliance-text { font-size: 11px; }
+
+    .float-badge { display: none; }
+  }
+
+  /* 모바일 (480px 이하) */
+  @media (max-width: 480px) {
+    .nav-inner { padding: 0 16px; }
+    .logo-text { font-size: 15px; }
+
+    .hero { padding: 72px 16px 48px; }
+    .hero h1 { font-size: 28px; line-height: 1.25; }
+    .hero-badge { font-size: 11px; padding: 5px 11px; }
+    .hero-desc { font-size: 14px; line-height: 1.7; }
+    .hero-stats { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; padding-top: 24px; }
+    .hero-stat-num { font-size: 20px; }
+    .hero-stat-label { font-size: 11px; }
+
+    .section { padding: 48px 16px; }
+    .section-label { font-size: 10px; }
+    .section-title { font-size: 24px; }
+
+    /* 네비 모바일 - CTA 버튼 하나만 */
+    .nav-cta .btn-primary { font-size: 12px; padding: 7px 14px; }
+
+    .feature-card { padding: 20px; }
+    .feat-icon-wrap { width: 44px; height: 44px; font-size: 20px; }
+    .feat-title { font-size: 15px; }
+
+    .how-tab { font-size: 12px; padding: 7px 12px; }
+    .step-title { font-size: 14px; }
+    .step-desc { font-size: 12px; }
+
+    .ai-title { font-size: 26px; }
+    .ai-desc { font-size: 13px; }
+    .ai-section { padding: 48px 16px; }
+
+    .role-card { padding: 24px 20px; }
+    .role-name { font-size: 16px; }
+    .role-desc { font-size: 12px; }
+
+    .tech-item { padding: 14px 10px; }
+    .tech-icon { font-size: 22px; }
+    .tech-name { font-size: 12px; }
+    .tech-cat { font-size: 10px; }
+
+    .phase-card { padding: 18px; }
+    .phase-title { font-size: 14px; }
+
+    .cta-title { font-size: 26px; }
+    .cta-desc { font-size: 14px; }
+    .btn-cta-main, .btn-cta-sec { max-width: 100%; font-size: 14px; padding: 13px 20px; }
+
+    .footer-inner { gap: 20px; }
+    .footer-desc { font-size: 12px; }
+
+    .compliance-bar { padding: 8px 12px; }
+    .compliance-text { font-size: 10px; line-height: 1.5; }
   }
 </style>
 </head>
@@ -1232,9 +1390,22 @@
     <div class="nav-cta">
       <a href="#" class="btn btn-ghost">로그인</a>
       <a href="#" class="btn btn-primary">무료 시작하기 →</a>
+      <button class="hamburger" id="hamburger" aria-label="메뉴 열기" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </div>
 </nav>
+
+<!-- 모바일 드롭다운 메뉴 -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" onclick="toggleMenu()">주요 기능</a>
+  <a href="#how" onclick="toggleMenu()">사용 방법</a>
+  <a href="#ai" onclick="toggleMenu()">AI 추천</a>
+  <a href="#roles" onclick="toggleMenu()">사용자 유형</a>
+  <a href="#phases" onclick="toggleMenu()">개발 일정</a>
+  <a href="#contact" class="mobile-cta" onclick="toggleMenu()">무료 시작하기 →</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -2012,6 +2183,14 @@
 </div>
 
 <script>
+  // 햄버거 메뉴
+  function toggleMenu() {
+    const btn = document.getElementById('hamburger');
+    const menu = document.getElementById('mobileMenu');
+    btn.classList.toggle('open');
+    menu.classList.toggle('open');
+  }
+
   // Tab switching
   function switchTab(role) {
     document.querySelectorAll('.how-tab').forEach(t => t.classList.remove('active'));
