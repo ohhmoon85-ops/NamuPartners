@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보험 GA 플랫폼 코딩 기획서</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0B1F3A;
+    --navy-mid: #1A3560;
+    --blue: #2563EB;
+    --blue-light: #3B82F6;
+    --teal: #0D9488;
+    --teal-light: #14B8A6;
+    --amber: #D97706;
+    --red: #DC2626;
+    --green: #059669;
+    --bg: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --border: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Noto Sans KR', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 14px;
+  }
+
+  /* Cover */
+  .cover {
+    background: var(--navy);
+    color: white;
+    padding: 72px 60px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 240px; height: 240px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .cover-badge {
+    display: inline-block;
+    background: rgba(37, 99, 235, 0.4);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    color: #93C5FD;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    margin-bottom: 24px;
+    font-family: var(--mono);
+  }
+  .cover h1 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .cover h1 span { color: #60A5FA; }
+  .cover-sub {
+    font-size: 18px;
+    color: #93C5FD;
+    font-weight: 300;
+    margin-bottom: 40px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .cover-meta-item label {
+    display: block;
+    font-size: 11px;
+    color: #64748B;
+    font-family: var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .cover-meta-item span {
+    font-size: 13px;
+    color: #CBD5E1;
+    font-weight: 500;
+  }
+
+  /* Layout */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+
+  /* TOC */
+  .toc {
+    background: var(--navy-mid);
+    color: white;
+    padding: 32px 60px;
+    border-bottom: 3px solid var(--blue);
+  }
+  .toc-title {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: #64748B;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px 32px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #94A3B8;
+    padding: 4px 0;
+  }
+  .toc-num {
+    font-family: var(--mono);
+    color: #3B82F6;
+    font-size: 11px;
+    min-width: 24px;
+  }
+
+  /* Sections */
+  .section {
+    padding: 56px 0 0;
+  }
+  .section:last-child { padding-bottom: 80px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue);
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  /* Feature grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    border-top: 3px solid transparent;
+  }
+  .feature-card.blue { border-top-color: var(--blue); }
+  .feature-card.teal { border-top-color: var(--teal); }
+  .feature-card.amber { border-top-color: var(--amber); }
+  .feature-card.green { border-top-color: var(--green); }
+  .feature-card.red { border-top-color: var(--red); }
+  .feature-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .feature-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .feature-list {
+    margin-top: 10px;
+    padding-left: 0;
+    list-style: none;
+  }
+  .feature-list li {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 3px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+  .feature-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--text-muted);
+    font-size: 10px;
+    top: 4px;
+  }
+
+  /* Tech stack */
+  .tech-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .tech-table th {
+    background: var(--navy);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .tech-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .tech-table tr:last-child td { border-bottom: none; }
+  .tech-table tr:nth-child(even) td { background: #F8FAFC; }
+  .tech-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    background: #EFF6FF;
+    color: var(--blue);
+    border: 1px solid #BFDBFE;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 1px;
+  }
+  .tech-badge.green { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
+  .tech-badge.amber { background: #FFFBEB; color: #D97706; border-color: #FDE68A; }
+  .tech-badge.gray { background: #F1F5F9; color: #475569; border-color: #CBD5E1; }
+  .tech-badge.red { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
+
+  /* Phase timeline */
+  .timeline {
+    position: relative;
+    padding-left: 32px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px; top: 10px; bottom: 10px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--blue), var(--teal));
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -27px; top: 22px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--blue);
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px var(--blue);
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .phase-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .phase-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .phase-badge.p1 { background: #EFF6FF; color: var(--blue); border: 1px solid #BFDBFE; }
+  .phase-badge.p2 { background: #F0FDF4; color: #059669; border: 1px solid #A7F3D0; }
+  .phase-badge.p3 { background: #FFF7ED; color: #EA580C; border: 1px solid #FED7AA; }
+  .phase-badge.p4 { background: #EEF2FF; color: #4F46E5; border: 1px solid #C7D2FE; }
+
+  .task-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .task-chip {
+    font-size: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* Screen wireframe */
+  .screen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .screen-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .screen-titlebar {
+    background: var(--navy);
+    color: white;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .screen-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .screen-body { padding: 16px; }
+  .screen-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .screen-row:last-child { border-bottom: none; }
+  .screen-row-label { flex: 1; color: var(--text-primary); font-weight: 500; }
+  .screen-row-val { color: var(--blue); font-family: var(--mono); font-size: 11px; }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+  .tag-blue { background: #EFF6FF; color: var(--blue); }
+  .tag-green { background: #ECFDF5; color: #059669; }
+  .tag-amber { background: #FFFBEB; color: #D97706; }
+  .tag-red { background: #FEF2F2; color: #DC2626; }
+
+  /* DB schema */
+  .db-table {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: inline-block;
+    min-width: 220px;
+    vertical-align: top;
+  }
+  .db-table-header {
+    background: var(--navy);
+    color: white;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--mono);
+  }
+  .db-col {
+    padding: 6px 16px;
+    font-size: 12px;
+    font-family: var(--mono);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .db-col:last-child { border-bottom: none; }
+  .db-col-name { color: var(--text-primary); flex: 1; }
+  .db-col-type { color: var(--text-muted); font-size: 11px; }
+  .db-pk { color: #F59E0B; font-size: 10px; }
+  .db-fk { color: var(--blue); font-size: 10px; }
+  .db-grid {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* Deploy flow */
+  .deploy-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    overflow: hidden;
+  }
+  .deploy-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+    padding: 8px;
+    position: relative;
+  }
+  .deploy-step::after {
+    content: '→';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+  .deploy-step:last-child::after { display: none; }
+  .deploy-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .deploy-icon.nav { background: #0B1F3A; }
+  .deploy-icon.gh { background: #1A1A1A; }
+  .deploy-icon.vc { background: #000; }
+  .deploy-icon.cdn { background: #EFF6FF; }
+  .deploy-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+  .deploy-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Priority table */
+  .priority-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .priority-table th {
+    background: #F1F5F9;
+    color: var(--text-secondary);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .priority-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .priority-table tr:last-child td { border-bottom: none; }
+  .pri-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  /* Info box */
+  .info-box {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-left: 3px solid var(--blue);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #1E40AF;
+    margin: 16px 0;
+  }
+  .warn-box {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-left: 3px solid var(--amber);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #92400E;
+    margin: 16px 0;
+  }
+
+  .text-block { font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px; }
+  .text-block strong { color: var(--navy); font-weight: 600; }
+
+  h4 { font-size: 14px; font-weight: 600; color: var(--navy); margin: 20px 0 10px; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* Folder tree */
+  .folder-tree {
+    background: #0B1F3A;
+    color: #CBD5E1;
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.9;
+  }
+  .folder-tree .dir { color: #60A5FA; font-weight: 500; }
+  .folder-tree .file { color: #94A3B8; }
+  .folder-tree .comment { color: #475569; font-style: italic; }
+
+  @media print {
+    body { background: white; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  @media (max-width: 640px) {
+    .cover { padding: 40px 24px 32px; }
+    .container { padding: 0 20px; }
+    .cover h1 { font-size: 26px; }
+    .toc { padding: 24px; }
+    .tech-table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<div class="cover">
+  <div class="cover-badge">PROJECT PROPOSAL v1.3 — 상품 연결 상담 신청 UI 추가</div>
+  <h1>보험 GA <span>통합 비교·설명</span> 플랫폼</h1>
+  <div class="cover-sub">InsureComp Pro — GA 전용 보험상품 비교 및 고객 설명 시스템</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><label>작성일</label><span>2026. 03. 22</span></div>
+    <div class="cover-meta-item"><label>배포 환경</label><span>GitHub + Vercel</span></div>
+    <div class="cover-meta-item"><label>사용자</label><span>보험 모집인 · GA 운영자 · 고객</span></div>
+    <div class="cover-meta-item"><label>개발 기간</label><span>Phase 1~4 / 약 5개월</span></div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">목차 / Contents</div>
+  <div class="toc-grid">
+    <div class="toc-item"><span class="toc-num">01</span> 프로젝트 개요 및 목표</div>
+    <div class="toc-item"><span class="toc-num">02</span> 핵심 기능 정의</div>
+    <div class="toc-item"><span class="toc-num">03</span> 화면 구성 (UX 설계)</div>
+    <div class="toc-item"><span class="toc-num">04</span> 기술 스택</div>
+    <div class="toc-item"><span class="toc-num">05</span> 데이터 구조 설계</div>
+    <div class="toc-item"><span class="toc-num">06</span> 개발 파일 구조</div>
+    <div class="toc-item"><span class="toc-num">07</span> 개발 단계 (Phase)</div>
+    <div class="toc-item"><span class="toc-num">08</span> 배포 파이프라인</div>
+    <div class="toc-item"><span class="toc-num">09</span> 보안 및 컴플라이언스</div>
+    <div class="toc-item"><span class="toc-num">10</span> 개발 우선순위 매트릭스</div>
+    <div class="toc-item"><span class="toc-num">11</span> GA 채널 통제 시스템</div>
+    <div class="toc-item"><span class="toc-num">12</span> LLM AI 추천 엔진 상세 설계</div>
+    <div class="toc-item"><span class="toc-num">13</span> 상품 연결 상담 신청 UI (방법 B)</div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+
+<!-- 01 개요 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">프로젝트 개요 및 목표</h2>
+  </div>
+
+  <div class="text-block">
+    보험 GA(General Agency)는 다수의 보험사 상품을 동시에 취급하기 때문에, 모집인이 각 보험사 상품의 <strong>보장 내용·보험료·특약 구조</strong>를 정확히 파악하고 고객에게 설명하는 데 상당한 시간과 노력이 소요됩니다. 본 플랫폼은 이 과정을 <strong>디지털 자동화</strong>하여 모집인 생산성을 높이고, 고객의 이해도를 극대화하는 데 목적이 있습니다.
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card blue">
+      <h3>🎯 문제 정의</h3>
+      <p>보험사별 상이한 상품명·특약 구조로 인한 모집인 혼란 및 고객 설명 비효율</p>
+      <ul class="feature-list">
+        <li>보험사마다 다른 상품 명칭 및 구조</li>
+        <li>보장 비교 시 수작업 엑셀 의존</li>
+        <li>고객 맞춤 설명 자료 제작에 과다 시간 소요</li>
+        <li>실시간 보험료 시뮬레이션 불가</li>
+      </ul>
+    </div>
+    <div class="feature-card teal">
+      <h3>✅ 솔루션 방향</h3>
+      <p>단일 웹 플랫폼에서 모든 보험사 상품을 비교하고, 고객용 설명 자료를 자동 생성</p>
+      <ul class="feature-list">
+        <li>보험사 통합 비교 대시보드</li>
+        <li>실시간 보험료 계산기</li>
+        <li>고객 맞춤 설명 자료 자동 생성</li>
+        <li>모바일 고객 공유 기능</li>
+      </ul>
+    </div>
+    <div class="feature-card amber">
+      <h3>👥 타깃 사용자</h3>
+      <p>GA 운영자, 소속 보험 모집인, 그리고 상담 고객 3가지 역할로 구분</p>
+      <ul class="feature-list">
+        <li>GA 관리자: 상품 데이터 관리, 모집인 계정 관리</li>
+        <li>보험 모집인: 상품 비교, 고객 제안서 생성</li>
+        <li>고객(View-only): 제안서 열람, 간편 상담 신청</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info-box">
+    💡 <strong>핵심 가치:</strong> 모집인이 "어떤 상품을 추천할까?" 고민하는 시간을 줄이고, 고객이 "이 상품이 나에게 맞는가?"를 쉽게 판단할 수 있도록 시각적·직관적 인터페이스를 제공합니다.
+  </div>
+</div>
+
+<!-- 02 핵심 기능 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">핵심 기능 정의</h2>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card blue">
+      <h3>📊 보험상품 비교 엔진</h3>
+      <p>최대 4개 상품을 나란히 비교하는 Side-by-Side 비교표. 보장 항목별 차이를 색상으로 강조 표시.</p>
+      <ul class="feature-list">
+        <li>보험사 / 상품명 / 보험 종류 필터</li>
+        <li>보장 항목별 점수화 (★ 표시)</li>
+        <li>항목별 유불리 자동 강조</li>
+        <li>PDF 비교표 다운로드</li>
+      </ul>
+    </div>
+    <div class="feature-card teal">
+      <h3>🧮 실시간 보험료 계산기</h3>
+      <p>성별, 나이, 납입 기간, 보장 금액 등을 입력하면 복수 보험사의 보험료를 즉시 계산.</p>
+      <ul class="feature-list">
+        <li>인터랙티브 슬라이더 UI</li>
+        <li>납입 방법별 (월납/연납) 비교</li>
+        <li>예상 환급률 표시</li>
+        <li>연령 변화에 따른 보험료 그래프</li>
+      </ul>
+    </div>
+    <div class="feature-card amber">
+      <h3>📋 고객 제안서 + 상담 신청 CTA</h3>
+      <p>선택한 상품과 고객 정보를 조합해 브랜드화된 제안서를 자동으로 생성·공유. 각 상품 카드에 <strong>"이 상품으로 가입 상담 신청"</strong> 버튼으로 즉시 모집인 연결.</p>
+      <ul class="feature-list">
+        <li>GA 브랜드 로고 적용</li>
+        <li>고객 이름 개인화</li>
+        <li>상품 카드별 "가입 상담 신청" CTA 버튼</li>
+        <li>신청 즉시 모집인 카카오 알림톡 발송</li>
+        <li>카카오톡/문자 링크 공유 · QR코드</li>
+      </ul>
+    </div>
+    <div class="feature-card green">
+      <h3>🤖 AI 상품 추천 엔진 (LLM 연동)</h3>
+      <p>고객 프로필을 LLM(GPT-4o / Claude / Gemini)에 전달해 최적 상품을 추천하고, <strong>단순 템플릿이 아닌 자연어로 설득력 있는 추천 이유를 자동 생성.</strong> 고객 화면에 AI 추천임을 명확히 표시하여 신뢰도 향상.</p>
+      <ul class="feature-list">
+        <li>가중치 점수 계산 → LLM 자연어 해설 생성</li>
+        <li>고객 제안서 상단 "AI 맞춤 분석" 배너 표시</li>
+        <li>상품 카드별 "AI 추천 N위" 뱃지 + 종합점수</li>
+        <li>보장·보험료·갱신 안정성 항목별 점수 바 표시</li>
+        <li>"AI 추천 이유" 블록 — LLM 생성 자연어 문장</li>
+        <li>하단 AI 분석 면책 고지 (신뢰 보조 장치)</li>
+      </ul>
+    </div>
+    <div class="feature-card red">
+      <h3>📱 모바일 고객 뷰</h3>
+      <p>고객이 스마트폰으로 접근하는 전용 읽기 전용 뷰. 직관적 카드 UI로 상품 이해 지원.</p>
+      <ul class="feature-list">
+        <li>스와이프 비교 (모바일 최적화)</li>
+        <li>보장 내용 아이콘화</li>
+        <li>원터치 상담 신청 버튼</li>
+        <li>만료 기간 설정 (보안)</li>
+      </ul>
+    </div>
+    <div class="feature-card blue">
+      <h3>⚙️ GA 관리자 패널</h3>
+      <p>보험 상품 데이터 입력·수정, 모집인 계정 관리, 통계 대시보드.</p>
+      <ul class="feature-list">
+        <li>상품 데이터 CRUD</li>
+        <li>엑셀 일괄 업로드</li>
+        <li>모집인별 활동 현황</li>
+        <li>제안서 열람 횟수 통계</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 03 화면 구성 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">화면 구성 (UX 설계)</h2>
+  </div>
+
+  <h4>주요 화면 목록</h4>
+  <div class="screen-grid">
+    <div class="screen-card">
+      <div class="screen-titlebar">
+        <div class="screen-dot" style="background:#FF5F57"></div>
+        <div class="screen-dot" style="background:#FFBD2E"></div>
+        <div class="screen-dot" style="background:#28C840"></div>
+        &nbsp; 비교 대시보드
+      </div>
+      <div class="screen-body">
+        <div class="screen-row"><span class="screen-row-label">상단 필터바</span><span class="tag tag-blue">종신/CI/암</span></div>
+        <div class="screen-row"><span class="screen-row-label">보험사 선택</span><span class="tag tag-green">멀티셀렉트</span></div>
+        <div class="screen-row"><span class="screen-row-label">비교 카드 (최대 4)</span><span class="tag tag-blue">드래그앤드롭</span></div>
+        <div class="screen-row"><span class="screen-row-label">보장 항목 비교표</span><span class="tag tag-amber">하이라이트</span></div>
+        <div class="screen-row"><span class="screen-row-label">제안서 생성 버튼</span><span class="tag tag-green">CTA</span></div>
+      </div>
+    </div>
+    <div class="screen-card">
+      <div class="screen-titlebar">
+        <div class="screen-dot" style="background:#FF5F57"></div>
+        <div class="screen-dot" style="background:#FFBD2E"></div>
+        <div class="screen-dot" style="background:#28C840"></div>
+        &nbsp; 보험료 계산기
+      </div>
+      <div class="screen-body">
+        <div class="screen-row"><span class="screen-row-label">고객 정보 입력</span><span class="tag tag-blue">슬라이더 UI</span></div>
+        <div class="screen-row"><span class="screen-row-label">보험사별 월보험료</span><span class="screen-row-val">₩실시간</span></div>
+        <div class="screen-row"><span class="screen-row-label">환급률 그래프</span><span class="tag tag-green">Chart.js</span></div>
+        <div class="screen-row"><span class="screen-row-label">납입 기간 변경</span><span class="tag tag-amber">10/15/20년</span></div>
+        <div class="screen-row"><span class="screen-row-label">특약 추가 시뮬레이션</span><span class="tag tag-blue">체크박스</span></div>
+      </div>
+    </div>
+    <div class="screen-card">
+      <div class="screen-titlebar">
+        <div class="screen-dot" style="background:#FF5F57"></div>
+        <div class="screen-dot" style="background:#FFBD2E"></div>
+        <div class="screen-dot" style="background:#28C840"></div>
+        &nbsp; 고객 제안서 뷰
+      </div>
+      <div class="screen-body">
+        <div class="screen-row"><span class="screen-row-label">GA 브랜드 헤더</span><span class="tag tag-blue">로고+색상</span></div>
+        <div class="screen-row"><span class="screen-row-label" style="color:#534AB7;font-weight:600">★ AI 맞춤 분석 배너</span><span class="tag" style="background:#EEEDFE;color:#3C3489">퍼플 강조</span></div>
+        <div class="screen-row"><span class="screen-row-label" style="color:#534AB7;font-weight:600">★ AI 추천 N위 뱃지</span><span class="tag" style="background:#EEEDFE;color:#3C3489">상품 카드별</span></div>
+        <div class="screen-row"><span class="screen-row-label" style="color:#534AB7;font-weight:600">★ 항목별 점수 바</span><span class="tag" style="background:#EEEDFE;color:#3C3489">보장·보험료·갱신</span></div>
+        <div class="screen-row"><span class="screen-row-label" style="color:#534AB7;font-weight:600">★ AI 추천 이유 블록</span><span class="tag" style="background:#EEEDFE;color:#3C3489">LLM 자연어</span></div>
+        <div class="screen-row"><span class="screen-row-label">월 보험료 요약</span><span class="screen-row-val">₩강조</span></div>
+        <div class="screen-row"><span class="screen-row-label" style="color:#DC2626;font-weight:600">★ 상품별 "가입 상담 신청" 버튼</span><span class="tag tag-red">핵심 CTA</span></div>
+        <div class="screen-row"><span class="screen-row-label">AI 분석 면책 고지</span><span class="tag tag-blue">하단 고정</span></div>
+      </div>
+    </div>
+    <div class="screen-card">
+      <div class="screen-titlebar">
+        <div class="screen-dot" style="background:#FF5F57"></div>
+        <div class="screen-dot" style="background:#FFBD2E"></div>
+        <div class="screen-dot" style="background:#28C840"></div>
+        &nbsp; 상담 신청 완료 화면
+      </div>
+      <div class="screen-body">
+        <div class="screen-row"><span class="screen-row-label">신청 상품명 확인</span><span class="tag tag-blue">요약 표시</span></div>
+        <div class="screen-row"><span class="screen-row-label">담당 모집인 정보</span><span class="tag tag-green">이름·연락처</span></div>
+        <div class="screen-row"><span class="screen-row-label">예상 연락 시간 안내</span><span class="tag tag-amber">영업일 기준</span></div>
+        <div class="screen-row"><span class="screen-row-label">카카오채널 바로가기</span><span class="tag tag-red">카카오 연동</span></div>
+        <div class="screen-row"><span class="screen-row-label">신청 취소 옵션</span><span class="tag tag-blue">30분 이내</span></div>
+      </div>
+    </div>
+    <div class="screen-card">
+      <div class="screen-titlebar">
+        <div class="screen-dot" style="background:#FF5F57"></div>
+        <div class="screen-dot" style="background:#FFBD2E"></div>
+        <div class="screen-dot" style="background:#28C840"></div>
+        &nbsp; 관리자 패널
+      </div>
+      <div class="screen-body">
+        <div class="screen-row"><span class="screen-row-label">상품 데이터 관리</span><span class="tag tag-blue">CRUD</span></div>
+        <div class="screen-row"><span class="screen-row-label">모집인 현황</span><span class="tag tag-green">테이블</span></div>
+        <div class="screen-row"><span class="screen-row-label">제안서 발송 통계</span><span class="tag tag-amber">차트</span></div>
+        <div class="screen-row"><span class="screen-row-label">엑셀 업로드</span><span class="tag tag-blue">xlsx 파싱</span></div>
+        <div class="screen-row"><span class="screen-row-label">보험사 API 연동 상태</span><span class="tag tag-green">헬스체크</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    ⚠️ <strong>모바일 우선 설계:</strong> 고객 제안서 뷰는 반드시 모바일 퍼스트(375px 기준)로 개발해야 합니다. 모집인이 태블릿/노트북을 사용하는 반면, 고객은 스마트폰으로 제안서를 열람하는 경우가 대부분입니다.
+  </div>
+</div>
+
+<!-- 04 기술 스택 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">기술 스택</h2>
+  </div>
+
+  <table class="tech-table">
+    <thead>
+      <tr>
+        <th style="width:130px">영역</th>
+        <th style="width:220px">기술 선택</th>
+        <th>선택 이유</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>프론트엔드</strong></td>
+        <td>
+          <span class="tech-badge">Next.js 14</span>
+          <span class="tech-badge">React 18</span>
+          <span class="tech-badge">TypeScript</span>
+        </td>
+        <td style="color:var(--text-secondary)">App Router 기반 SSR/SSG 지원, SEO 최적화, Vercel 네이티브 배포. TypeScript로 보험 데이터 타입 안전성 확보.</td>
+      </tr>
+      <tr>
+        <td><strong>스타일링</strong></td>
+        <td>
+          <span class="tech-badge amber">Tailwind CSS</span>
+          <span class="tech-badge amber">shadcn/ui</span>
+        </td>
+        <td style="color:var(--text-secondary)">빠른 반응형 UI 개발, shadcn/ui로 접근성 있는 컴포넌트 기반 구성. 커스텀 GA 브랜드 테마 적용 용이.</td>
+      </tr>
+      <tr>
+        <td><strong>차트/시각화</strong></td>
+        <td>
+          <span class="tech-badge green">Chart.js</span>
+          <span class="tech-badge green">Recharts</span>
+        </td>
+        <td style="color:var(--text-secondary)">보험료 비교 바 차트, 환급률 라인 차트, 보장 레이더 차트에 활용. Recharts는 React 친화적 구성.</td>
+      </tr>
+      <tr>
+        <td><strong>백엔드</strong></td>
+        <td>
+          <span class="tech-badge">Next.js API Routes</span>
+          <span class="tech-badge">Prisma ORM</span>
+        </td>
+        <td style="color:var(--text-secondary)">별도 백엔드 서버 불필요. API Routes로 보험료 계산, 제안서 생성 로직 처리. Prisma로 타입 세이프 DB 쿼리.</td>
+      </tr>
+      <tr>
+        <td><strong>데이터베이스</strong></td>
+        <td>
+          <span class="tech-badge red">PostgreSQL</span>
+          <span class="tech-badge gray">Vercel Postgres</span>
+        </td>
+        <td style="color:var(--text-secondary)">복잡한 보험 상품 구조(특약, 보장 항목)를 관계형으로 저장. Vercel Postgres로 배포 환경과 통합 관리.</td>
+      </tr>
+      <tr>
+        <td><strong>인증</strong></td>
+        <td>
+          <span class="tech-badge">NextAuth.js</span>
+          <span class="tech-badge amber">JWT</span>
+        </td>
+        <td style="color:var(--text-secondary)">GA 관리자 / 모집인 / 고객 3가지 역할(Role) 기반 접근 제어. 카카오 소셜 로그인 연동 지원.</td>
+      </tr>
+      <tr>
+        <td><strong>파일/이미지</strong></td>
+        <td>
+          <span class="tech-badge green">Vercel Blob</span>
+          <span class="tech-badge gray">Sharp</span>
+        </td>
+        <td style="color:var(--text-secondary)">GA 로고, 보험사 로고 이미지 저장. Sharp로 제안서 PDF 생성 시 이미지 최적화.</td>
+      </tr>
+      <tr>
+        <td><strong>PDF 생성</strong></td>
+        <td>
+          <span class="tech-badge amber">Puppeteer</span>
+          <span class="tech-badge amber">jsPDF</span>
+        </td>
+        <td style="color:var(--text-secondary)">비교표 및 제안서 PDF 출력. Puppeteer는 서버사이드 고품질 PDF, jsPDF는 클라이언트 간편 출력에 활용.</td>
+      </tr>
+      <tr>
+        <td><strong>상태 관리</strong></td>
+        <td>
+          <span class="tech-badge">Zustand</span>
+          <span class="tech-badge gray">React Query</span>
+        </td>
+        <td style="color:var(--text-secondary)">비교 선택 상태, 계산기 입력 상태는 Zustand. 보험 데이터 서버 페칭·캐싱은 React Query(TanStack Query).</td>
+      </tr>
+      <tr>
+        <td><strong>AI / LLM</strong></td>
+        <td>
+          <span class="tech-badge green">OpenAI GPT-4o</span>
+          <span class="tech-badge green">Claude API</span>
+          <span class="tech-badge green">Gemini Pro</span>
+        </td>
+        <td style="color:var(--text-secondary)">추천 이유 자연어 생성·제안서 문구 자동 작성에 활용. GA 설정 화면에서 사용 모델 전환 가능. API 비용 절감을 위해 추천 결과 캐싱 전략 병행.</td>
+      </tr>
+      <tr>
+        <td><strong>배포</strong></td>
+        <td>
+          <span class="tech-badge">Vercel</span>
+          <span class="tech-badge gray">GitHub Actions</span>
+        </td>
+        <td style="color:var(--text-secondary)">GitHub push → 자동 배포. PR별 Preview URL 생성. CI에서 TypeScript 타입 체크, ESLint, Vitest 자동 실행.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 05 데이터 구조 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">데이터 구조 설계</h2>
+  </div>
+
+  <h4>핵심 DB 스키마 (PostgreSQL + Prisma)</h4>
+  <div class="db-grid">
+    <div class="db-table">
+      <div class="db-table-header">InsuranceCompany</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">name</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">logoUrl</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">ratingGrade</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">createdAt</span><span class="db-col-type">datetime</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">Product</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">companyId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">productName</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">category</span><span class="db-col-type">enum</span></div>
+      <div class="db-col"><span class="db-col-name">premiumBase</span><span class="db-col-type">decimal</span></div>
+      <div class="db-col"><span class="db-col-name">renewalType</span><span class="db-col-type">enum</span></div>
+      <div class="db-col"><span class="db-col-name">maxAge</span><span class="db-col-type">int</span></div>
+      <div class="db-col"><span class="db-col-name">isActive</span><span class="db-col-type">boolean</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">Coverage (보장항목)</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">productId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">coverageName</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">amount</span><span class="db-col-type">decimal</span></div>
+      <div class="db-col"><span class="db-col-name">unit</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">isOptional</span><span class="db-col-type">boolean</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">Proposal (제안서)</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">agentId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">clientName</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">productIds</span><span class="db-col-type">uuid[]</span></div>
+      <div class="db-col"><span class="db-col-name">shareToken</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">expiresAt</span><span class="db-col-type">datetime</span></div>
+      <div class="db-col"><span class="db-col-name">viewCount</span><span class="db-col-type">int</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">ConsultationRequest (상담신청)</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">proposalId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">productId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">agentId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">clientName</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">clientPhone</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">status</span><span class="db-col-type">enum</span></div>
+      <div class="db-col"><span class="db-col-name">requestedAt</span><span class="db-col-type">datetime</span></div>
+      <div class="db-col"><span class="db-col-name">cancelledAt</span><span class="db-col-type">datetime?</span></div>
+    </div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">name</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">email</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">role</span><span class="db-col-type">enum</span></div>
+      <div class="db-col"><span class="db-col-name">licenseNo</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">phone</span><span class="db-col-type">string</span></div>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:16px">
+    📌 <strong>특약(Rider) 설계:</strong> Coverage 테이블에서 <code>isOptional: true</code>로 특약을 구분하고, ProductRider 조인 테이블로 각 상품의 선택 가능 특약 목록을 관리합니다. 보험료 계산 시 선택된 특약의 추가 보험료를 합산하는 로직을 API Route에서 처리합니다.
+  </div>
+</div>
+
+<!-- 06 파일 구조 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">개발 파일 구조</h2>
+  </div>
+
+  <div class="folder-tree">
+<span class="dir">insurecomp-pro/</span>
+├── <span class="dir">app/</span>                        <span class="comment"># Next.js 14 App Router</span>
+│   ├── <span class="dir">(auth)/</span>
+│   │   ├── login/
+│   │   └── layout.tsx
+│   ├── <span class="dir">(dashboard)/</span>             <span class="comment"># 모집인 영역</span>
+│   │   ├── compare/page.tsx       <span class="comment"># 상품 비교 메인</span>
+│   │   ├── calculator/page.tsx    <span class="comment"># 보험료 계산기</span>
+│   │   ├── proposals/page.tsx     <span class="comment"># 제안서 목록</span>
+│   │   └── layout.tsx
+│   ├── <span class="dir">admin/</span>                   <span class="comment"># GA 관리자 영역</span>
+│   │   ├── products/page.tsx
+│   │   ├── agents/page.tsx
+│   │   └── stats/page.tsx
+│   ├── <span class="dir">share/[token]/</span>           <span class="comment"># 고객용 제안서 (공개)</span>
+│   │   └── page.tsx
+│   ├── <span class="dir">consult/</span>                 <span class="comment"># 상담 신청 완료 화면</span>
+│   │   └── [requestId]/page.tsx
+│   └── <span class="dir">api/</span>
+│       ├── products/route.ts
+│       ├── calculator/route.ts    <span class="comment"># 보험료 계산 API</span>
+│       ├── proposals/route.ts
+│       ├── consultation/route.ts  <span class="comment"># 상담 신청 생성·취소 API</span>
+│       ├── notify/route.ts        <span class="comment"># 카카오 알림톡 발송 공통 API</span>
+│       └── auth/[...nextauth]/route.ts
+├── <span class="dir">components/</span>
+│   ├── <span class="dir">compare/</span>
+│   │   ├── CompareTable.tsx       <span class="comment"># 핵심: 비교 대표 컴포넌트</span>
+│   │   ├── ProductCard.tsx
+│   │   └── CoverageRow.tsx
+│   ├── <span class="dir">calculator/</span>
+│   │   ├── PremiumSlider.tsx
+│   │   └── PremiumChart.tsx
+│   ├── <span class="dir">proposal/</span>
+│   │   ├── ProposalViewer.tsx     <span class="comment"># 고객 뷰</span>
+│   │   ├── ProposalBuilder.tsx
+│   │   ├── ShareModal.tsx
+│   │   └── ConsultButton.tsx      <span class="comment"># "가입 상담 신청" CTA 버튼 컴포넌트</span>
+│   ├── <span class="dir">consult/</span>
+│   │   ├── ConsultForm.tsx        <span class="comment"># 상담 신청 모달 (연락처 입력)</span>
+│   │   └── ConsultComplete.tsx    <span class="comment"># 신청 완료 화면</span>
+│   └── <span class="dir">ui/</span>                     <span class="comment"># shadcn/ui 기반 공통 컴포넌트</span>
+├── <span class="dir">lib/</span>
+│   ├── prisma.ts
+│   ├── auth.ts
+│   ├── calculator.ts              <span class="comment"># 보험료 계산 핵심 로직</span>
+│   ├── pdf-generator.ts
+│   ├── kakao-notify.ts            <span class="comment"># 카카오 알림톡 발송 (열람알림·상담신청 공통)</span>
+│   ├── llm-client.ts              <span class="comment"># LLM API 추상화 레이어</span>
+│   └── recommendation-engine.ts  <span class="comment"># 가중치 점수 계산 + LLM 자연어 생성</span>
+├── <span class="dir">store/</span>                       <span class="comment"># Zustand 상태 관리</span>
+│   ├── compareStore.ts
+│   └── calculatorStore.ts
+├── <span class="dir">prisma/</span>
+│   ├── schema.prisma
+│   └── seed.ts                    <span class="comment"># 샘플 보험 데이터</span>
+├── <span class="file">.env.local</span>
+├── <span class="file">next.config.ts</span>
+├── <span class="file">tailwind.config.ts</span>
+└── <span class="file">vercel.json</span>
+  </div>
+</div>
+
+<!-- 07 개발 단계 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">개발 단계 (Phase)</h2>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="phase-header">
+        <span class="phase-title">Phase 1 — 기반 구축 및 데이터 모델</span>
+        <span class="phase-badge p1">1~2주차</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">프로젝트 초기 셋업, DB 설계, 인증 시스템 구축. <strong>엑셀 업로드로 실제 보험 상품 데이터를 최초 적재</strong>하고, 개인정보 암호화·금소법 면책 고지를 기반 구축 단계에서 함께 완성.</p>
+      <div class="task-row">
+        <span class="task-chip">Next.js 프로젝트 초기화</span>
+        <span class="task-chip">GitHub 레포 생성</span>
+        <span class="task-chip">Vercel 연동</span>
+        <span class="task-chip">Prisma 스키마 설계</span>
+        <span class="task-chip">NextAuth 설정</span>
+        <span class="task-chip">관리자/모집인 Role 설정</span>
+        <span class="task-chip" style="background:#FEF2F2;border-color:#FECACA;color:#991B1B;font-weight:500">⬆ 엑셀 일괄 업로드 (P3→P0 격상)</span>
+        <span class="task-chip" style="background:#FEF2F2;border-color:#FECACA;color:#991B1B;font-weight:500">⬆ 개인정보 AES-256 암호화 (Phase 1 필수)</span>
+        <span class="task-chip" style="background:#FEF2F2;border-color:#FECACA;color:#991B1B;font-weight:500">⬆ 금소법 면책 고지 Sticky Footer (전 화면)</span>
+      </div>
+      <div class="warn-box" style="margin-top:12px;margin-bottom:0">
+        ⬆ <strong>[평가 반영]</strong> 엑셀 업로드를 Phase 4 → Phase 1으로 격상. 상품 데이터 없이는 비교·계산 기능 자체를 테스트할 수 없으므로 개발 초기에 반드시 선행. 금소법 면책 고지도 개발 첫날부터 전 화면 Sticky Footer로 적용.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="phase-header">
+        <span class="phase-title">Phase 2 — 핵심 비교 기능 개발</span>
+        <span class="phase-badge p2">3~5주차</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">플랫폼의 핵심인 상품 비교 엔진과 보험료 계산기 개발. <strong>계산기는 Phase 2에서 "연령·성별 기준 표준 가이드 보험료"만 제공</strong>하고, 직업 급수·병력 등 정밀 변수 반영은 Phase 4로 이연.</p>
+      <div class="task-row">
+        <span class="task-chip">상품 목록·필터 API</span>
+        <span class="task-chip">Side-by-Side 비교표 UI</span>
+        <span class="task-chip">보장 항목 하이라이트 로직</span>
+        <span class="task-chip">표준 가이드 보험료 계산 (연령·성별)</span>
+        <span class="task-chip">슬라이더 계산기 UI</span>
+        <span class="task-chip">Chart.js 보험료 그래프</span>
+        <span class="task-chip">Zustand 비교 상태 관리</span>
+        <span class="task-chip">"상담으로 정확한 금액 확인" CTA 버튼</span>
+      </div>
+      <div class="info-box" style="margin-top:12px;margin-bottom:0">
+        ⬆ <strong>[평가 반영]</strong> 보험료는 직업 급수·과거 병력 등으로 계산 로직이 매우 복잡함. Phase 2에서는 <strong>표준 연령별 가이드 보험료</strong>를 "예상 금액" 으로 표시하고, 정밀 계산은 상담 연결로 유도하는 현실적 전략으로 수정.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="phase-header">
+        <span class="phase-title">Phase 3 — 제안서 시스템 개발</span>
+        <span class="phase-badge p3">6~8주차</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">고객 제안서 생성·공유·열람 시스템 구현. 모바일 최적화 고객 뷰 완성. <strong>고객이 링크를 클릭하는 순간 모집인에게 실시간 알림 발송.</strong> 이 플랫폼의 핵심 차별점인 <strong>LLM 기반 AI 추천 엔진을 Phase 3에서 조기 확보</strong>하여 경쟁력을 선점.</p>
+      <div class="task-row">
+        <span class="task-chip">제안서 Builder UI</span>
+        <span class="task-chip">공유 토큰 생성 API</span>
+        <span class="task-chip">고객용 Share 페이지</span>
+        <span class="task-chip">PDF 생성 (Puppeteer)</span>
+        <span class="task-chip">카카오 공유 연동</span>
+        <span class="task-chip">QR코드 생성</span>
+        <span class="task-chip">제안서 열람 통계</span>
+        <span class="task-chip" style="background:#F0FDF4;border-color:#A7F3D0;color:#065F46;font-weight:500">★ 열람 실시간 알림 (Vercel Edge + 카카오 알림톡)</span>
+        <span class="task-chip" style="background:#F0FDF4;border-color:#A7F3D0;color:#065F46;font-weight:500">★ 제안서 워터마크 (모집인명 삽입)</span>
+        <span class="task-chip" style="background:#EEF2FF;border-color:#C7D2FE;color:#3730A3;font-weight:500">🤖 LLM AI 추천 엔진 (Phase 4→3 조기 확보)</span>
+        <span class="task-chip" style="background:#EEF2FF;border-color:#C7D2FE;color:#3730A3;font-weight:500">🤖 가중치 점수 → LLM 자연어 추천 이유 생성</span>
+        <span class="task-chip" style="background:#EEF2FF;border-color:#C7D2FE;color:#3730A3;font-weight:500">🤖 추천 결과 제안서 자동 삽입</span>
+        <span class="task-chip" style="background:#FFF7ED;border-color:#FED7AA;color:#9A3412;font-weight:500">📲 상품별 "가입 상담 신청" CTA 버튼</span>
+        <span class="task-chip" style="background:#FFF7ED;border-color:#FED7AA;color:#9A3412;font-weight:500">📲 상담 신청 모달 (연락처 입력)</span>
+        <span class="task-chip" style="background:#FFF7ED;border-color:#FED7AA;color:#9A3412;font-weight:500">📲 신청 즉시 모집인 카카오 알림톡 발송</span>
+        <span class="task-chip" style="background:#FFF7ED;border-color:#FED7AA;color:#9A3412;font-weight:500">📲 상담 신청 완료 화면 (담당 모집인 정보)</span>
+        <span class="task-chip" style="background:#FFF7ED;border-color:#FED7AA;color:#9A3412;font-weight:500">📲 30분 이내 신청 취소 기능</span>
+      </div>
+      <div class="info-box" style="margin-top:12px;margin-bottom:0">
+        🤖 <strong>[AI 추천 Phase 4→3 조기 확보]</strong> AI 추천이 이 플랫폼의 핵심 차별점이라면 Phase 3에서 선제적으로 구현하는 것이 전략적으로 유리함. 고객 프로필 입력 → 가중치 점수 계산 → LLM API 호출 → 자연어 추천 이유 생성 → 제안서 자동 삽입 파이프라인. LLM 모델은 <code>llm-client.ts</code> 추상화 레이어로 GPT-4o / Claude / Gemini 중 GA 설정에서 선택 가능.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="phase-header">
+        <span class="phase-title">Phase 4 — 관리자 패널 및 고도화</span>
+        <span class="phase-badge p4">9~12주차</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">GA 관리자용 상품 관리·통계 패널 완성, <strong>직업 급수·병력 등 변수를 반영한 정밀 보험료 계산 엔진</strong> 고도화, LLM 추천 결과 품질 개선 및 성능 최적화.</p>
+      <div class="task-row">
+        <span class="task-chip">관리자 상품 CRUD</span>
+        <span class="task-chip">모집인 활동 대시보드</span>
+        <span class="task-chip">정밀 보험료 계산 고도화 (직업급수·병력)</span>
+        <span class="task-chip">LLM 추천 품질 개선 (프롬프트 튜닝)</span>
+        <span class="task-chip">추천 결과 캐싱 (API 비용 절감)</span>
+        <span class="task-chip">성능 최적화 (캐싱)</span>
+        <span class="task-chip">다크 모드 (디자인 QA 완료 후)</span>
+        <span class="task-chip">최종 QA 및 배포</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 08 배포 파이프라인 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">배포 파이프라인 (GitHub → Vercel)</h2>
+  </div>
+
+  <div class="deploy-flow">
+    <div class="deploy-step">
+      <div class="deploy-icon nav" style="font-size:22px;background:#1E293B">💻</div>
+      <div class="deploy-label">로컬 개발</div>
+      <div class="deploy-sub">npm run dev</div>
+    </div>
+    <div class="deploy-step">
+      <div class="deploy-icon gh" style="font-size:22px;background:#1A1A1A">🐙</div>
+      <div class="deploy-label">GitHub Push</div>
+      <div class="deploy-sub">main / feature/*</div>
+    </div>
+    <div class="deploy-step">
+      <div class="deploy-icon" style="font-size:22px;background:#F0FDF4">✅</div>
+      <div class="deploy-label">GitHub Actions</div>
+      <div class="deploy-sub">Type · Lint · Test</div>
+    </div>
+    <div class="deploy-step">
+      <div class="deploy-icon vc" style="font-size:22px;background:#1A1A1A">▲</div>
+      <div class="deploy-label">Vercel Deploy</div>
+      <div class="deploy-sub">자동 빌드</div>
+    </div>
+    <div class="deploy-step">
+      <div class="deploy-icon cdn" style="font-size:22px;background:#EFF6FF">🌐</div>
+      <div class="deploy-label">Edge Network</div>
+      <div class="deploy-sub">글로벌 CDN</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">브랜치 전략</div>
+    <div class="text-block" style="margin:0">
+      <strong>main</strong> — 프로덕션 배포 브랜치 (보호됨, PR 필수) &nbsp;|&nbsp;
+      <strong>develop</strong> — 통합 테스트 브랜치 &nbsp;|&nbsp;
+      <strong>feature/xxx</strong> — 기능별 개발 브랜치 → PR 시 Vercel Preview URL 자동 생성, 모집인/관리자 계정으로 기능 테스트 후 merge.
+    </div>
+  </div>
+
+  <h4 style="margin-top:20px">환경 변수 관리 (Vercel Dashboard)</h4>
+  <div class="folder-tree">
+<span class="comment"># .env.local (로컬 개발용 — .gitignore에 반드시 포함)</span>
+DATABASE_URL=<span class="dir">"postgresql://..."</span>       <span class="comment"># Vercel Postgres</span>
+NEXTAUTH_SECRET=<span class="dir">"..."</span>
+NEXTAUTH_URL=<span class="dir">"http://localhost:3000"</span>
+KAKAO_CLIENT_ID=<span class="dir">"..."</span>
+KAKAO_CLIENT_SECRET=<span class="dir">"..."</span>
+BLOB_READ_WRITE_TOKEN=<span class="dir">"..."</span>           <span class="comment"># Vercel Blob (로고 이미지)</span>
+OPENAI_API_KEY=<span class="dir">"sk-..."</span>               <span class="comment"># LLM 추천 엔진 — GPT-4o</span>
+ANTHROPIC_API_KEY=<span class="dir">"sk-ant-..."</span>         <span class="comment"># LLM 추천 엔진 — Claude (대체 모델)</span>
+LLM_PROVIDER=<span class="dir">"openai"</span>                 <span class="comment"># GA 설정: openai | anthropic | google</span>
+  </div>
+</div>
+
+<!-- 09 보안 및 컴플라이언스 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">보안 및 컴플라이언스</h2>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card blue">
+      <h3>🔐 개인정보 보호</h3>
+      <ul class="feature-list">
+        <li>고객명 등 개인정보 암호화 저장 (AES-256)</li>
+        <li>제안서 공유 링크 만료 기간 설정 (7일 기본)</li>
+        <li>열람 횟수 제한 옵션</li>
+        <li>개인정보처리방침 동의 화면 필수</li>
+      </ul>
+    </div>
+    <div class="feature-card amber">
+      <h3>⚖️ 금소법·보험업법 준수</h3>
+      <ul class="feature-list">
+        <li><strong>금소법 면책 고지 — 전 화면 Sticky Footer 고정</strong> (Phase 1 필수)</li>
+        <li>"본 비교 자료는 참고용이며 확정된 보장·수익이 아닙니다" 문구 명시</li>
+        <li>최종 계약은 보험사 공식 채널 통해 진행 안내</li>
+        <li>보험료 계산 결과는 "예상 금액" 명시</li>
+        <li>모집인 등록번호 제안서 필수 포함</li>
+      </ul>
+    </div>
+    <div class="feature-card green">
+      <h3>🛡️ 시스템 보안</h3>
+      <ul class="feature-list">
+        <li>Role-based Access Control (RBAC)</li>
+        <li>API Route 인증 미들웨어 전수 적용</li>
+        <li>Rate Limiting (제안서 생성 남용 방지)</li>
+        <li>HTTPS 강제 (Vercel 기본 제공)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 10 우선순위 매트릭스 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">개발 우선순위 매트릭스</h2>
+  </div>
+
+  <table class="priority-table">
+    <thead>
+      <tr>
+        <th>기능</th>
+        <th>우선순위</th>
+        <th>난이도</th>
+        <th>예상 기간</th>
+        <th>비고</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>상품 비교 테이블</strong></td>
+        <td><span class="pri-dot" style="background:#DC2626"></span>P0 Critical</td>
+        <td>높음</td>
+        <td>2주</td>
+        <td>플랫폼 핵심 기능</td>
+      </tr>
+      <tr>
+        <td><strong>엑셀 일괄 업로드</strong> <span style="font-size:10px;color:#DC2626;font-weight:600">▲ P3→P0</span></td>
+        <td><span class="pri-dot" style="background:#DC2626"></span>P0 Critical</td>
+        <td>중간</td>
+        <td>1주</td>
+        <td>Phase 1 필수 — 데이터 없으면 개발 진행 불가</td>
+      </tr>
+      <tr>
+        <td><strong>금소법 면책 고지 Sticky Footer</strong> <span style="font-size:10px;color:#DC2626;font-weight:600">▲ Phase1 필수</span></td>
+        <td><span class="pri-dot" style="background:#DC2626"></span>P0 Critical</td>
+        <td>낮음</td>
+        <td>1일</td>
+        <td>전 화면 고정 — 개발 첫날부터 적용</td>
+      </tr>
+      <tr>
+        <td><strong>보험료 계산기</strong> <span style="font-size:10px;color:#D97706;font-weight:600">★ 범위 조정</span></td>
+        <td><span class="pri-dot" style="background:#DC2626"></span>P0 Critical</td>
+        <td>중간 <span style="font-size:10px;color:#059669">(표준값만)</span></td>
+        <td>1.5주</td>
+        <td>Phase 2: 표준 가이드 보험료만. 정밀 계산은 Phase 4</td>
+      </tr>
+      <tr>
+        <td><strong>고객 제안서 공유</strong></td>
+        <td><span class="pri-dot" style="background:#D97706"></span>P1 High</td>
+        <td>중간</td>
+        <td>1.5주</td>
+        <td>모바일 최적화 필수</td>
+      </tr>
+      <tr>
+        <td><strong>열람 실시간 알림</strong> <span style="font-size:10px;color:#059669;font-weight:600">★ 신규 추가</span></td>
+        <td><span class="pri-dot" style="background:#D97706"></span>P1 High</td>
+        <td>중간</td>
+        <td>1주</td>
+        <td>Phase 3 — Vercel Edge + 카카오 알림톡</td>
+      </tr>
+      <tr>
+        <td><strong>제안서 워터마크</strong> <span style="font-size:10px;color:#059669;font-weight:600">★ 신규 추가</span></td>
+        <td><span class="pri-dot" style="background:#D97706"></span>P1 High</td>
+        <td>낮음</td>
+        <td>3일</td>
+        <td>Phase 3 — 모집인명 삽입 (복사 방지는 미적용)</td>
+      </tr>
+      <tr>
+        <td><strong>PDF 다운로드</strong></td>
+        <td><span class="pri-dot" style="background:#D97706"></span>P1 High</td>
+        <td>중간</td>
+        <td>1주</td>
+        <td>Puppeteer 서버 설정 필요</td>
+      </tr>
+      <tr>
+        <td><strong>상품 연결 상담 신청 UI</strong> <span style="font-size:10px;color:#EA580C;font-weight:600">📲 신규 추가</span></td>
+        <td><span class="pri-dot" style="background:#D97706"></span>P1 High</td>
+        <td>중간</td>
+        <td>1주</td>
+        <td>Phase 3 — CTA버튼·신청모달·완료화면·카카오알림 세트</td>
+      </tr>
+      <tr>
+        <td><strong>LLM AI 추천 엔진</strong> <span style="font-size:10px;color:#4F46E5;font-weight:600">🤖 Phase 4→3 조기 확보</span></td>
+        <td><span class="pri-dot" style="background:#D97706"></span>P1 High</td>
+        <td>높음</td>
+        <td>2주</td>
+        <td>Phase 3 — GPT-4o / Claude / Gemini 추상화 레이어</td>
+      </tr>
+      <tr>
+        <td><strong>관리자 상품 CRUD</strong></td>
+        <td><span class="pri-dot" style="background:#2563EB"></span>P2 Medium</td>
+        <td>낮음</td>
+        <td>1주</td>
+        <td>엑셀 업로드 이후 보완</td>
+      </tr>
+      <tr>
+        <td><strong>LLM 추천 품질 개선</strong></td>
+        <td><span class="pri-dot" style="background:#2563EB"></span>P2 Medium</td>
+        <td>중간</td>
+        <td>1주</td>
+        <td>Phase 4 — 프롬프트 튜닝·캐싱 비용 최적화</td>
+      </tr>
+      <tr>
+        <td><strong>정밀 보험료 계산 고도화</strong></td>
+        <td><span class="pri-dot" style="background:#2563EB"></span>P2 Medium</td>
+        <td>높음</td>
+        <td>2주</td>
+        <td>Phase 4 — 직업급수·병력 변수 반영</td>
+      </tr>
+      <tr>
+        <td><strong>카카오 공유 연동</strong></td>
+        <td><span class="pri-dot" style="background:#059669"></span>P3 Low</td>
+        <td>낮음</td>
+        <td>3일</td>
+        <td>API 키 발급 선행</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box" style="margin-top:20px">
+    🚀 <strong>MVP 범위 (Phase 1~2):</strong> 상품 비교 테이블 + 보험료 계산기만으로도 모집인에게 즉각적인 가치를 제공할 수 있습니다. Phase 3~4는 운영 중 피드백을 반영해 순차적으로 추가합니다.
+  </div>
+
+  <hr class="divider">
+  <div class="text-block" style="text-align:center;color:var(--text-muted);font-size:12px">
+    본 기획서는 InsureComp Pro 프로젝트의 초기 개발 로드맵입니다. (v1.3 — 상품 연결 상담 신청 UI 추가) &nbsp;|&nbsp;
+    세부 기능 및 보험료 계산 로직은 실제 보험사 데이터 수집 후 조정됩니다. &nbsp;|&nbsp;
+    GitHub: <strong>insurecomp-pro</strong> &nbsp;|&nbsp; Vercel 배포 도메인: <strong>insurecomp.vercel.app</strong>
+  </div>
+</div>
+
+
+<!-- 11 GA 채널 통제 시스템 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <h2 class="section-title">GA 채널 통제 시스템</h2>
+  </div>
+
+  <div class="text-block">
+    모집인이 GA 시스템을 이용하면서 <strong>고객을 임의로 타 GA에 연결하거나 GA 승인 없이 독자 계약을 진행하는 것을 방지</strong>하기 위한 4개 레이어 통제 구조입니다. 기술적 제한과 경제적 유인을 함께 설계하여 모집인이 자발적으로 시스템 안에서 영업하도록 유도합니다.
+  </div>
+
+  <div class="warn-box">
+    ⚠️ <strong>도입 전략:</strong> Layer 1·2는 Phase 1~3에서 즉시 적용. Layer 3(모니터링)은 초기에는 내부용으로만 운영하다가 필요 시 공개. 지나친 통제는 모집인 반발을 유발할 수 있으므로 단계적으로 도입.
+  </div>
+
+  <h4 style="margin-top:24px">Layer 1 — 고객 데이터 소유권 통제</h4>
+  <div class="card" style="border-left:3px solid var(--red);border-radius:0 12px 12px 0">
+    <div class="text-block" style="margin-bottom:12px">고객 정보는 <strong>GA 소유</strong>로 DB에 귀속. 모집인은 열람 권한만 가지며 소유권이 없습니다. 퇴사·이직 시 계정 비활성화만으로 모든 접근이 즉시 차단됩니다.</div>
+    <div class="feature-grid" style="margin:0">
+      <div class="feature-card blue" style="border-top:none;border-left:3px solid var(--blue);border-radius:0 8px 8px 0">
+        <h3>고객 DB 귀속 구조</h3>
+        <p>고객 레코드에 <code>ownedByGaId</code> 필드 고정. 모집인 FK는 담당자 표시용일 뿐, 소유권과 분리.</p>
+        <ul class="feature-list">
+          <li>모집인 계정 삭제 시 고객 데이터는 GA에 유지</li>
+          <li>담당 모집인 재배정 기능 (GA 관리자 전용)</li>
+        </ul>
+      </div>
+      <div class="feature-card red" style="border-top:none;border-left:3px solid var(--red);border-radius:0 8px 8px 0">
+        <h3>고객 목록 내보내기 차단</h3>
+        <p>모집인 Role은 고객 1건씩 조회만 가능. 전체 목록 CSV/Excel 다운로드는 GA 관리자만 허용.</p>
+        <ul class="feature-list">
+          <li>Export API — AGENT Role 접근 시 403 차단</li>
+          <li>화면 내 복사 방지 (선택적 적용)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px">Layer 2 — 제안서·계약 흐름 통제</h4>
+  <div class="card" style="border-left:3px solid var(--amber);border-radius:0 12px 12px 0">
+    <div class="text-block" style="margin-bottom:12px">제안서 발송부터 계약 완료까지 <strong>GA 시스템 안에서만 진행</strong>되도록 워크플로우를 설계합니다. 시스템 외부로 계약이 빠져나가는 경로를 구조적으로 차단.</div>
+    <div class="feature-grid" style="margin:0">
+      <div class="feature-card amber" style="border-top:none;border-left:3px solid var(--amber);border-radius:0 8px 8px 0">
+        <h3>제안서 GA 브랜딩 고정</h3>
+        <p>모든 제안서에 GA 로고·연락처·고유 식별 코드를 서버사이드에서 강제 삽입. 모집인이 임의 수정 불가.</p>
+        <ul class="feature-list">
+          <li>PDF 생성 시 GA 브랜드 레이어 오버레이</li>
+          <li>공유 URL에 GA 도메인 고정</li>
+        </ul>
+      </div>
+      <div class="feature-card amber" style="border-top:none;border-left:3px solid var(--amber);border-radius:0 8px 8px 0">
+        <h3>계약 완료 신고 의무화</h3>
+        <p>고객이 제안서 열람 후 3일 이내 "계약 완료 등록"이 없으면 GA 관리자에게 자동 알림. 누수 계약 조기 감지.</p>
+        <ul class="feature-list">
+          <li>ProposalStatus: viewed → pending → completed</li>
+          <li>3일 경과 시 관리자 알림 자동 발송</li>
+        </ul>
+      </div>
+      <div class="feature-card amber" style="border-top:none;border-left:3px solid var(--amber);border-radius:0 8px 8px 0">
+        <h3>고액 계약 관리자 승인</h3>
+        <p>월 보험료 기준액 이상 제안서는 GA 관리자 승인 후 발송. 대형 건을 GA 모르게 독자 처리하는 것 방지.</p>
+        <ul class="feature-list">
+          <li>임계값은 GA 설정 화면에서 조정 가능</li>
+          <li>승인 대기 중 제안서는 발송 잠금</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px">Layer 3 — 이상 행동 감지 (내부 모니터링)</h4>
+  <div class="card" style="border-left:3px solid var(--blue);border-radius:0 12px 12px 0">
+    <div class="text-block" style="margin-bottom:12px">시스템 사용 패턴을 분석해 <strong>GA 이탈 징후를 조기에 포착</strong>합니다. 모집인에게는 노출하지 않고 GA 관리자 대시보드에서만 확인하는 내부 운영 도구입니다.</div>
+    <div class="feature-grid" style="margin:0">
+      <div class="feature-card blue" style="border-top:none;border-left:3px solid var(--blue);border-radius:0 8px 8px 0">
+        <h3>계약 전환율 추적</h3>
+        <p>모집인별 "제안서 발송 수 대비 계약 완료 수" 비율. 전환율 급락 = 외부 채널 유출 신호.</p>
+        <ul class="feature-list">
+          <li>GA 관리자 대시보드 전용 차트</li>
+          <li>월별 트렌드 비교</li>
+        </ul>
+      </div>
+      <div class="feature-card blue" style="border-top:none;border-left:3px solid var(--blue);border-radius:0 8px 8px 0">
+        <h3>시스템 비활동 감지</h3>
+        <p>7일 이상 제안서 미생성 모집인을 GA 관리자에게 알림. 시스템 우회 영업 가능성 감지.</p>
+        <ul class="feature-list">
+          <li>Vercel Cron Job으로 매일 자동 점검</li>
+          <li>비활동 기간 설정 가능</li>
+        </ul>
+      </div>
+      <div class="feature-card blue" style="border-top:none;border-left:3px solid var(--blue);border-radius:0 8px 8px 0">
+        <h3>접속 패턴 로그</h3>
+        <p>새벽 대량 조회, 단시간 다수 고객 접근 등 비정상 패턴 기록. 주간 리포트로 관리자에게 발송.</p>
+        <ul class="feature-list">
+          <li>ActivityLog 테이블 별도 관리</li>
+          <li>이상 패턴 감지 쿼리 자동 실행</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px">Layer 4 — 수수료 연동 잠금 (가장 강력한 통제)</h4>
+  <div class="card" style="border-left:3px solid var(--green);border-radius:0 12px 12px 0">
+    <div class="text-block" style="margin-bottom:12px"><strong>"시스템 밖 계약 = 수수료 없음"</strong> 구조를 만들면 모집인이 스스로 시스템을 사용하게 됩니다. 기술적 강제보다 경제적 유인이 훨씬 강력하고 지속 가능한 통제 수단입니다.</div>
+    <div class="feature-grid" style="margin:0">
+      <div class="feature-card green" style="border-top:none;border-left:3px solid var(--green);border-radius:0 8px 8px 0">
+        <h3>수수료 정산 시스템 연계</h3>
+        <p>Commission 테이블에 <code>proposalId</code> FK 필수. 시스템에 등록된 계약 건에만 수수료 정산 가능.</p>
+        <ul class="feature-list">
+          <li>모집인별 정산 현황 대시보드</li>
+          <li>미연결 계약 건 정산 API 차단</li>
+        </ul>
+      </div>
+      <div class="feature-card green" style="border-top:none;border-left:3px solid var(--green);border-radius:0 8px 8px 0">
+        <h3>모집인 이용 약관 전자 서명</h3>
+        <p>계정 생성 시 "GA 시스템 통한 영업 의무, 고객 데이터 GA 귀속" 전자 서명. 분쟁 시 법적 근거.</p>
+        <ul class="feature-list">
+          <li>서명일시·IP·UserAgent 기록</li>
+          <li>약관 변경 시 재동의 요청</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px">DB 스키마 추가 항목</h4>
+  <div class="db-grid">
+    <div class="db-table">
+      <div class="db-table-header">Client (고객 — GA 귀속)</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">ownedByGaId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">assignedAgentId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">nameEncrypted</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">phoneEncrypted</span><span class="db-col-type">string</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">Commission (수수료)</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">proposalId</span><span class="db-col-type">uuid — 필수</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">agentId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">amount</span><span class="db-col-type">decimal</span></div>
+      <div class="db-col"><span class="db-col-name">status</span><span class="db-col-type">enum</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">ActivityLog (접속 로그)</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">agentId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">action</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">ipAddress</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">createdAt</span><span class="db-col-type">datetime</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">AgentAgreement (이용약관)</div>
+      <div class="db-col"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-fk">FK</span><span class="db-col-name">agentId</span><span class="db-col-type">uuid</span></div>
+      <div class="db-col"><span class="db-col-name">version</span><span class="db-col-type">string</span></div>
+      <div class="db-col"><span class="db-col-name">signedAt</span><span class="db-col-type">datetime</span></div>
+      <div class="db-col"><span class="db-col-name">ipAddress</span><span class="db-col-type">string</span></div>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:20px">
+    💡 <strong>개발 우선순위:</strong> Layer 1(고객 DB 귀속 구조)은 Phase 1 DB 설계 시 반드시 반영. Layer 2(계약 흐름 통제)는 Phase 3 제안서 시스템과 함께 구현. Layer 3·4는 Phase 4에서 완성.
+  </div>
+</div>
+
+<!-- 12 LLM AI 추천 엔진 상세 설계 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <h2 class="section-title">LLM AI 추천 엔진 상세 설계</h2>
+  </div>
+
+  <div class="text-block">
+    기존 "항목 가중치 기반 점수 계산"은 유지하되, 그 결과를 <strong>LLM에게 전달해 자연어로 설득력 있는 추천 이유를 생성</strong>하는 2단계 파이프라인입니다. 단순 템플릿 대비 고객별 맞춤 표현이 가능하여 제안서의 전문성과 설득력이 크게 향상됩니다.
+  </div>
+
+  <h4>AI 추천 파이프라인 (2단계)</h4>
+  <div class="feature-grid">
+    <div class="feature-card blue">
+      <h3>Step 1 — 가중치 점수 계산 (서버 로직)</h3>
+      <p>고객 프로필 입력값을 기반으로 각 보험 상품에 수치 점수를 부여.</p>
+      <ul class="feature-list">
+        <li>나이·성별·직업·건강 상태·예산 입력</li>
+        <li>보장 항목별 가중치 × 상품 점수 합산</li>
+        <li>상위 3개 상품 선정</li>
+        <li>점수 계산은 DB 쿼리만으로 처리 (LLM 미사용, 빠름)</li>
+      </ul>
+    </div>
+    <div class="feature-card green">
+      <h3>Step 2 — LLM 자연어 생성 (API 호출)</h3>
+      <p>점수 계산 결과와 고객 프로필을 LLM에 전달해 추천 이유 문장을 생성.</p>
+      <ul class="feature-list">
+        <li>시스템 프롬프트: "당신은 10년 경력의 보험 전문 FP입니다"</li>
+        <li>고객 정보 + 상위 3개 상품 데이터 → LLM 입력</li>
+        <li>출력: 상품별 2~3문장 추천 이유 (자연어)</li>
+        <li>결과 캐싱 (동일 프로필 재호출 시 API 비용 절감)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 style="margin-top:20px">LLM 추상화 레이어 설계 (llm-client.ts)</h4>
+  <div class="card">
+    <div class="text-block" style="margin-bottom:12px">하나의 인터페이스로 여러 LLM 모델을 교체할 수 있는 <strong>추상화 레이어</strong>를 구현합니다. GA 운영자가 설정 화면에서 모델을 변경하면 코드 수정 없이 즉시 전환됩니다.</div>
+    <div class="folder-tree">
+<span class="comment"># lib/llm-client.ts 핵심 구조</span>
+<span class="dir">interface</span> LLMClient {
+  generateRecommendation(input: RecommendationInput): <span class="dir">Promise</span>&lt;string&gt;
+}
+
+<span class="comment"># 환경변수 LLM_PROVIDER에 따라 자동 선택</span>
+<span class="dir">const</span> providers = {
+  openai:    <span class="dir">OpenAIClient</span>    <span class="comment"># GPT-4o — 추천 품질 최상</span>
+  anthropic: <span class="dir">AnthropicClient</span> <span class="comment"># Claude 3.5 Sonnet — 안전성 우수</span>
+  google:    <span class="dir">GeminiClient</span>    <span class="comment"># Gemini Pro — 비용 효율적</span>
+}
+
+<span class="comment"># 캐싱 전략: 동일 프로필 해시 → Redis/Vercel KV 조회 우선</span>
+<span class="dir">const</span> cacheKey = hash(customerId + topProductIds)
+    </div>
+  </div>
+
+  <h4 style="margin-top:20px">LLM 프롬프트 설계 (핵심)</h4>
+  <div class="card" style="background:#0B1F3A;border-color:#1A3560">
+    <div style="font-family:var(--mono);font-size:12px;line-height:1.9;color:#CBD5E1">
+      <span style="color:#60A5FA">// 시스템 프롬프트</span><br>
+      당신은 10년 이상 경력의 대한민국 보험 전문 FP(Financial Planner)입니다.<br>
+      고객 정보와 추천 상품 데이터를 분석하여 <span style="color:#34D399">고객 입장에서</span> 이해하기 쉬운 언어로<br>
+      각 상품의 추천 이유를 2~3문장으로 작성하세요.<br>
+      <br>
+      <span style="color:#60A5FA">// 사용자 프롬프트 (동적 데이터 삽입)</span><br>
+      고객 정보: <span style="color:#FCD34D">{나이}세 {성별}, {직업}, 월 예산 {예산}만원</span><br>
+      건강 상태: <span style="color:#FCD34D">{건강고지사항}</span><br>
+      <br>
+      추천 상품 1: <span style="color:#FCD34D">{보험사} {상품명}</span> — 주요 보장: <span style="color:#FCD34D">{보장목록}</span><br>
+      추천 상품 2: <span style="color:#FCD34D">{보험사} {상품명}</span> — 주요 보장: <span style="color:#FCD34D">{보장목록}</span><br>
+      <br>
+      <span style="color:#60A5FA">// 출력 형식 지정 (JSON 파싱용)</span><br>
+      <span style="color:#34D399">반드시 JSON 형식으로만</span> 응답하세요:<br>
+      { "product1_reason": "...", "product2_reason": "..." }
+    </div>
+  </div>
+
+  <h4 style="margin-top:20px">LLM 모델별 비교 및 선택 기준</h4>
+  <table class="tech-table">
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>추천 품질</th>
+        <th>응답 속도</th>
+        <th>API 비용 (1K 토큰)</th>
+        <th>권장 사용 시점</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>GPT-4o</strong></td>
+        <td><span style="color:var(--green)">★★★★★</span></td>
+        <td>보통 (1~2초)</td>
+        <td>~$0.005</td>
+        <td>프로덕션 기본값 — 품질 우선</td>
+      </tr>
+      <tr>
+        <td><strong>Claude 3.5 Sonnet</strong></td>
+        <td><span style="color:var(--green)">★★★★★</span></td>
+        <td>빠름 (0.5~1초)</td>
+        <td>~$0.003</td>
+        <td>안전성·정확성 중시 GA에 적합</td>
+      </tr>
+      <tr>
+        <td><strong>Gemini 1.5 Pro</strong></td>
+        <td><span style="color:var(--amber)">★★★★☆</span></td>
+        <td>빠름</td>
+        <td>~$0.0035</td>
+        <td>비용 절감 필요 시 대체 옵션</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="warn-box" style="margin-top:16px">
+    ⚠️ <strong>비용 관리 주의:</strong> LLM API는 호출 건당 비용이 발생합니다. <strong>동일한 고객+상품 조합은 Vercel KV(Redis)에 캐싱</strong>하여 재호출을 방지하고, 월 API 비용을 GA 설정에서 모니터링할 수 있는 대시보드를 함께 구현합니다. 초기에는 추천 결과 생성 시에만 API를 호출하고, 제안서 열람 시에는 저장된 결과를 재사용하는 구조를 권장합니다.
+  </div>
+
+  <div class="info-box" style="margin-top:12px">
+    💡 <strong>Phase 3 조기 확보 근거:</strong> 경쟁 GA 플랫폼 대비 "AI가 추천 이유를 직접 써준다"는 기능은 모집인이 플랫폼에 계속 머무르게 만드는 가장 강력한 유인입니다. 비교 기능(Phase 2)이 완성된 직후 AI 추천을 붙여 초기 사용자 확보 시점에 차별점을 각인시키는 전략이 효과적입니다.
+  </div>
+</div>
+
+<!-- 13 상품 연결 상담 신청 UI -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13</span>
+    <h2 class="section-title">상품 연결 상담 신청 UI (방법 B)</h2>
+  </div>
+
+  <div class="text-block">
+    고객이 제안서에서 마음에 드는 상품을 발견했을 때 <strong>그 자리에서 바로 가입 상담을 신청</strong>할 수 있는 UI입니다. 신청 즉시 담당 모집인에게 카카오 알림톡이 발송되어 빠른 팔로업이 가능하고, GA 시스템 안에서 계약 흐름이 완결되어 채널 통제 원칙도 유지됩니다.
+  </div>
+
+  <h4>AI 추천 표시 UI 구성 요소 (고객 화면)</h4>
+  <div class="feature-grid">
+    <div class="feature-card" style="border-top:3px solid #534AB7">
+      <h3>① AI 맞춤 분석 배너 (최상단)</h3>
+      <p>제안서 진입 직후 가장 먼저 보이는 위치에 퍼플 배너로 AI 분석 사실을 알림. 고객이 "왜 이 상품이 나에게 추천됐는지" 맥락을 먼저 이해하게 함.</p>
+      <ul class="feature-list">
+        <li>문구: "AI가 고객님 맞춤 분석으로 추천한 상품입니다"</li>
+        <li>부제: "나이·직업·건강 상태·예산을 종합 분석하였습니다"</li>
+        <li>AI 아이콘 + 퍼플 배경으로 시각적 구분</li>
+      </ul>
+    </div>
+    <div class="feature-card" style="border-top:3px solid #534AB7">
+      <h3>② 상품 카드 — AI 추천 뱃지 + 점수</h3>
+      <p>각 상품 카드 우측 상단에 "AI 추천 1위 / 2위 / 3위" 뱃지와 종합점수(100점 만점) 표시. 1위 카드는 테두리 강조로 시각적 우선순위 명확화.</p>
+      <ul class="feature-list">
+        <li>AI 추천 순위 뱃지 (퍼플 계열)</li>
+        <li>종합점수 숫자 표시</li>
+        <li>1위 카드: 보더 2px 강조</li>
+      </ul>
+    </div>
+    <div class="feature-card" style="border-top:3px solid #534AB7">
+      <h3>③ 항목별 점수 바</h3>
+      <p>보장 범위·보험료 적정성·갱신 안정성 3개 항목을 점수 바로 시각화. 고객이 수치로 상품을 직관적으로 비교할 수 있음.</p>
+      <ul class="feature-list">
+        <li>보장 범위 / 보험료 적정성 / 갱신 안정성</li>
+        <li>퍼플 채움 바 + 우측 숫자</li>
+        <li>상품 간 한눈에 비교 가능</li>
+      </ul>
+    </div>
+    <div class="feature-card" style="border-top:3px solid #534AB7">
+      <h3>④ AI 추천 이유 블록</h3>
+      <p>각 상품 카드 내부에 LLM이 생성한 고객 맞춤 추천 이유 2~3문장. 퍼플 배경 블록으로 강조하여 일반 설명과 구분.</p>
+      <ul class="feature-list">
+        <li>AI 아이콘 + "AI 추천 이유" 라벨</li>
+        <li>LLM 생성 자연어 2~3문장</li>
+        <li>고객 직업·나이·예산을 맞춤 언급</li>
+      </ul>
+    </div>
+    <div class="feature-card" style="border-top:3px solid #5F5E5A">
+      <h3>⑤ 하단 AI 면책 고지</h3>
+      <p>신뢰를 높이면서도 법적 리스크를 방지하는 소형 안내 문구. 방패 아이콘과 함께 회색 배경으로 눈에 띄지 않지만 존재감 있게 배치.</p>
+      <ul class="feature-list">
+        <li>"AI 추천 결과는 참고 자료이며 최종 보험료는 상담으로 확정"</li>
+        <li>방패 아이콘 + 작은 회색 텍스트</li>
+        <li>금소법 면책 고지와 통합 배치</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info-box">
+    💡 <strong>디자인 원칙:</strong> AI 관련 모든 UI 요소는 <strong>퍼플(#534AB7) 계열</strong>로 통일합니다. 고객이 "보라색 = AI가 분석한 것"을 자연스럽게 연상하도록 색상 언어를 일관되게 유지하는 것이 핵심입니다. 1위 추천 상품은 퍼플 2px 테두리로 다른 상품과 명확히 구분합니다.
+  </div>
+
+  <hr class="divider">
+  <h4>전체 흐름 (고객 → 모집인)</h4>
+  <div class="card">
+    <div style="display:flex;gap:0;align-items:stretch;flex-wrap:wrap">
+      <div style="flex:1;min-width:130px;padding:12px 14px;border-right:0.5px solid var(--border);text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">📄</div>
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px">제안서 열람</div>
+        <div style="font-size:11px;color:var(--text-secondary)">고객이 카카오·문자로 받은 링크 오픈</div>
+      </div>
+      <div style="display:flex;align-items:center;padding:0 4px;color:var(--text-muted);font-size:18px">›</div>
+      <div style="flex:1;min-width:130px;padding:12px 14px;border-right:0.5px solid var(--border);text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">👆</div>
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px">CTA 버튼 클릭</div>
+        <div style="font-size:11px;color:var(--text-secondary)">상품 카드별 "가입 상담 신청" 버튼</div>
+      </div>
+      <div style="display:flex;align-items:center;padding:0 4px;color:var(--text-muted);font-size:18px">›</div>
+      <div style="flex:1;min-width:130px;padding:12px 14px;border-right:0.5px solid var(--border);text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">📝</div>
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px">연락처 입력</div>
+        <div style="font-size:11px;color:var(--text-secondary)">이름·전화번호·희망 연락 시간 (Bottom Sheet)</div>
+      </div>
+      <div style="display:flex;align-items:center;padding:0 4px;color:var(--text-muted);font-size:18px">›</div>
+      <div style="flex:1;min-width:130px;padding:12px 14px;border-right:0.5px solid var(--border);text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">✅</div>
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px">신청 완료</div>
+        <div style="font-size:11px;color:var(--text-secondary)">담당 모집인 정보·예상 연락 시간 표시</div>
+      </div>
+      <div style="display:flex;align-items:center;padding:0 4px;color:var(--text-muted);font-size:18px">›</div>
+      <div style="flex:1;min-width:130px;padding:12px 14px;text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">📲</div>
+        <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:4px">모집인 알림</div>
+        <div style="font-size:11px;color:var(--text-secondary)">카카오 알림톡 즉시 발송</div>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px">UI 상세 설계</h4>
+  <div class="feature-grid">
+    <div class="feature-card blue">
+      <h3>① 상품 카드 CTA 버튼</h3>
+      <p>고객 제안서의 각 상품 카드 하단에 위치. AI 추천 이유 문장 바로 아래 배치하여 설득 → 행동 전환을 자연스럽게 유도.</p>
+      <ul class="feature-list">
+        <li>버튼 텍스트: "이 상품으로 가입 상담 신청하기"</li>
+        <li>GA 브랜드 컬러 강조 버튼 (풀 width)</li>
+        <li>이미 신청한 상품은 "신청 완료" 상태로 비활성화</li>
+        <li>복수 상품 동시 신청 가능</li>
+      </ul>
+    </div>
+    <div class="feature-card amber">
+      <h3>② 연락처 입력 Bottom Sheet</h3>
+      <p>버튼 클릭 시 화면 하단에서 올라오는 모달. 모바일 친화적 Bottom Sheet UI로 입력 편의성 극대화.</p>
+      <ul class="feature-list">
+        <li>신청 상품명 상단 확인 표시</li>
+        <li>이름·연락처 입력 (기존 입력 정보 자동 채움)</li>
+        <li>희망 연락 시간 선택 (오전/오후/저녁)</li>
+        <li>개인정보 수집 동의 체크박스</li>
+      </ul>
+    </div>
+    <div class="feature-card green">
+      <h3>③ 신청 완료 화면</h3>
+      <p>신청 처리 후 고객에게 다음 단계를 명확히 안내. 모집인 정보를 노출해 신뢰감 제공.</p>
+      <ul class="feature-list">
+        <li>담당 모집인 이름·프로필 사진 표시</li>
+        <li>예상 연락 시간 안내 (영업일 기준)</li>
+        <li>카카오채널 바로가기 버튼</li>
+        <li>30분 이내 신청 취소 버튼</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px">모집인 수신 카카오 알림톡 내용</h4>
+  <div class="card" style="background:#0B1F3A;border-color:#1A3560;max-width:380px">
+    <div style="font-size:12px;line-height:2;color:#CBD5E1;font-family:var(--mono)">
+      <span style="color:#FCD34D;font-weight:600">[InsureComp Pro] 가입 상담 신청 접수</span><br><br>
+      <span style="color:#94A3B8">고객명:</span> <span style="color:#34D399">김○○ 고객님</span><br>
+      <span style="color:#94A3B8">신청 상품:</span> <span style="color:#60A5FA">삼성생명 무배당 통합보험</span><br>
+      <span style="color:#94A3B8">월 보험료:</span> <span style="color:#60A5FA">약 89,000원</span><br>
+      <span style="color:#94A3B8">희망 연락:</span> <span style="color:#60A5FA">오늘 오후 2~5시</span><br>
+      <span style="color:#94A3B8">연락처:</span> <span style="color:#60A5FA">010-****-1234</span><br>
+      <span style="color:#94A3B8">신청 시각:</span> <span style="color:#94A3B8">2026.03.22 14:32</span><br><br>
+      <span style="color:#FCD34D">▶ 상담 관리 바로가기</span>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px">API 설계</h4>
+  <div class="folder-tree">
+<span class="comment"># POST /api/consultation — 상담 신청 생성</span>
+Body: {
+  proposalId: <span class="dir">string</span>
+  productId:  <span class="dir">string</span>
+  clientName: <span class="dir">string</span>        <span class="comment"># 암호화 저장</span>
+  clientPhone: <span class="dir">string</span>       <span class="comment"># 암호화 저장</span>
+  preferredTime: <span class="dir">"morning" | "afternoon" | "evening"</span>
+}
+Response: { requestId: <span class="dir">string</span>, agentName: <span class="dir">string</span>, agentPhone: <span class="dir">string</span> }
+
+<span class="comment"># 신청 즉시 실행 (서버사이드)</span>
+1. ConsultationRequest DB 저장 (status: <span class="dir">"pending"</span>)
+2. kakao-notify.ts → 담당 모집인 카카오 알림톡 발송
+3. 모집인 대시보드 신규 신청 뱃지 업데이트
+
+<span class="comment"># DELETE /api/consultation/:id — 30분 이내 취소</span>
+→ status: <span class="dir">"cancelled"</span> + cancelledAt 기록
+→ 모집인에게 취소 알림톡 발송
+  </div>
+
+  <div class="info-box" style="margin-top:16px">
+    💡 <strong>GA 채널 통제 완결:</strong> 이 UI를 통해 고객의 가입 의사 표현이 반드시 GA 시스템을 거치게 됩니다. 모집인이 외부 채널로 고객을 유도할 동기가 줄어들고, 모든 상담 신청 이력이 GA 관리자 대시보드에 기록되어 섹션 11의 채널 통제 시스템과 완벽히 연동됩니다.
+  </div>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
